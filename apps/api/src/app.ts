@@ -23,7 +23,12 @@ export async function buildApiApp(options: ApiAppOptions = {}): Promise<FastifyI
     connectTimeout: 1000,
     timezone: "Z",
   });
-  const redis = new Redis(config.redis.url, { lazyConnect: true, maxRetriesPerRequest: 1 });
+  const redis = new Redis(config.redis.url, {
+    lazyConnect: true,
+    maxRetriesPerRequest: 1,
+    connectTimeout: 1000,
+    commandTimeout: 1000,
+  });
   const checks = options.checks ?? [
     {
       name: "mysql",
