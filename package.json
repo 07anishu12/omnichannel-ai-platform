@@ -1,0 +1,25 @@
+{
+  "name": "omnichannel-platform",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=24.21.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @omni/web --filter @omni/api --filter @omni/worker dev",
+    "dev:ai": "uv run --directory services/ai-service uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "typecheck": "pnpm --workspace-concurrency=1 --recursive typecheck",
+    "test": "pnpm --filter @omni/contracts --filter @omni/security build && pnpm --workspace-concurrency=1 --recursive test",
+    "build": "pnpm --workspace-concurrency=1 --recursive build",
+    "validate:stage": "node scripts/validate-stage.mjs",
+    "validate:stage-fixtures": "node scripts/validate-stage-fixtures.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}
