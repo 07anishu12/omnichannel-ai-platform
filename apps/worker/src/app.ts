@@ -9,7 +9,7 @@ export async function buildWorkerApp(
   check: Check = {
     enabled: true,
     check: async () => {
-      const redis = new Redis(process.env.REDIS_URL ?? "redis://127.0.0.1:6379", {
+      const redis = new Redis(process.env.REDIS_URL ?? "redis://127.0.0.1:6380", {
         lazyConnect: true,
       });
       await redis.connect();

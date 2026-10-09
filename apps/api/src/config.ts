@@ -29,7 +29,7 @@ export function loadConfig() {
     },
     redis: {
       enabled: boolEnv("API_REQUIRE_REDIS", true),
-      url: process.env.REDIS_URL ?? "redis://127.0.0.1:6379",
+      url: process.env.REDIS_URL ?? "redis://127.0.0.1:6380",
     },
     qdrant: {
       enabled: boolEnv("API_REQUIRE_QDRANT", true),
