@@ -4,15 +4,15 @@ services:
     environment:
       MYSQL_DATABASE: omnichannel_local
       MYSQL_USER: omnichannel_app
-      MYSQL_PASSWORD: local-app-password
-      MYSQL_ROOT_PASSWORD: local-root-password
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required. Set it in the root .env file (see .env.example).}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required. Set it in the root .env file (see .env.example).}
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci", "--default-time-zone=+00:00"]
     ports:
       - "127.0.0.1:3306:3306"
     volumes:
       - omnichannel_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -plocal-root-password --silent"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -38,7 +38,7 @@ services:
     volumes:
       - omnichannel_qdrant_data:/qdrant/storage
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6333/readyz >/dev/null"]
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333 && printf 'GET /readyz HTTP/1.0\\r\\nHost: 127.0.0.1\\r\\n\\r\\n' >&3 && head -n1 <&3 | grep -q ' 200 '"]
       interval: 5s
       timeout: 3s
       retries: 20

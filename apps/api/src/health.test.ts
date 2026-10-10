@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { buildApiApp } from "./app.js";
+import { loadConfig } from "./config.js";
+
+const config = loadConfig({ API_REQUIRE_MYSQL: "false" });
 
 test("live endpoint proves only process liveness", async () => {
   const app = await buildApiApp({
+    config,
     checks: [],
   });
   const response = await app.inject({ method: "GET", url: "/health/live" });
@@ -14,6 +18,7 @@ test("live endpoint proves only process liveness", async () => {
 
 test("readiness reports dependency reachability separately", async () => {
   const app = await buildApiApp({
+    config,
     checks: [{ name: "synthetic", enabled: true, check: async () => undefined }],
   });
   const response = await app.inject({ method: "GET", url: "/health/ready" });
@@ -24,6 +29,7 @@ test("readiness reports dependency reachability separately", async () => {
 
 test("readiness fails when a required dependency is unreachable", async () => {
   const app = await buildApiApp({
+    config,
     checks: [
       {
         name: "synthetic",
