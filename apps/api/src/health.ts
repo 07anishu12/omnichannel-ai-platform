@@ -1,4 +1,7 @@
 import type { DependencyStatus, ReadinessResponse } from "@omni/contracts";
+import { withTimeout } from "./timeout.js";
+
+export const DEPENDENCY_CHECK_TIMEOUT_MS = 1000;
 
 export type DependencyCheck = {
   name: string;
@@ -9,6 +12,7 @@ export type DependencyCheck = {
 export async function readiness(
   service: string,
   checks: DependencyCheck[],
+  timeoutMs: number = DEPENDENCY_CHECK_TIMEOUT_MS,
 ): Promise<{ body: ReadinessResponse; statusCode: 200 | 503 }> {
   const dependencies: DependencyStatus[] = [];
   for (const dependency of checks) {
@@ -17,7 +21,11 @@ export async function readiness(
       continue;
     }
     try {
-      await dependency.check();
+      await withTimeout(
+        (async () => dependency.check())(),
+        timeoutMs,
+        `${dependency.name} readiness`,
+      );
       dependencies.push({ name: dependency.name, status: "reachable" });
     } catch {
       dependencies.push({

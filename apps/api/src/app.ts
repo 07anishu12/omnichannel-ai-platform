@@ -4,11 +4,13 @@ import { Redis } from "ioredis";
 import { liveResponseSchema } from "@omni/contracts";
 import { logRedactionPaths, newCorrelationId } from "@omni/security";
 import { loadConfig, type ApiConfig } from "./config.js";
-import { readiness, type DependencyCheck } from "./health.js";
+import { DEPENDENCY_CHECK_TIMEOUT_MS, readiness, type DependencyCheck } from "./health.js";
+import { withTimeout } from "./timeout.js";
 
 export type ApiAppOptions = {
   config?: ApiConfig;
   checks?: DependencyCheck[];
+  dependencyTimeoutMs?: number;
 };
 
 export async function buildApiApp(options: ApiAppOptions = {}): Promise<FastifyInstance> {
@@ -86,13 +88,19 @@ export async function buildApiApp(options: ApiAppOptions = {}): Promise<FastifyI
   });
 
   app.get("/health/ready", async (_request, reply) => {
-    const result = await readiness("api", checks);
+    const result = await readiness("api", checks, options.dependencyTimeoutMs);
     return reply.code(result.statusCode).send(result.body);
   });
 
   app.addHook("onClose", async () => {
     await database.end();
-    if (redis.status !== "wait") await redis.quit();
+    if (redis.status === "ready") {
+      await withTimeout(redis.quit(), DEPENDENCY_CHECK_TIMEOUT_MS, "redis quit").catch(() => {
+        redis.disconnect();
+      });
+    } else if (redis.status !== "end") {
+      redis.disconnect();
+    }
   });
 
   return app;
