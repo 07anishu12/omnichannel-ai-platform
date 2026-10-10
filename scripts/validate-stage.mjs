@@ -11,7 +11,12 @@ function argumentValue(name, fallback) {
 }
 
 function read(file) {
-  return fs.readFileSync(path.join(root, file), "utf8");
+  try {
+    return fs.readFileSync(path.join(root, file), "utf8");
+  } catch (error) {
+    console.error(`- cannot read ${file}: ${error.code ?? error.message}`);
+    process.exit(1);
+  }
 }
 
 const index = parseStageRows(read(argumentValue("--index", "docs/stage-index.md")));
