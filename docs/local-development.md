@@ -20,7 +20,12 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm validate:stage-fixtures
-pnpm validate:stage -- --stage 02
+pnpm check:boundaries
+pnpm smoke:web-api
+pnpm test:mysql
+pnpm exec playwright install --with-deps chromium
+pnpm test:browser
+pnpm validate:stage --stage 02
 pnpm dev
 pnpm dev:ai
 ```

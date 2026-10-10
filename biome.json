@@ -13,6 +13,15 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/node_modules", "!**/.next", "!**/dist", "!**/.venv", "!**/uv.lock"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/dist",
+      "!**/.venv",
+      "!**/uv.lock",
+      "!**/test-results",
+      "!**/playwright-report"
+    ]
   }
 }

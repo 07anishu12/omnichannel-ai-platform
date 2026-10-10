@@ -17,10 +17,13 @@
     "validate:stage": "node scripts/validate-stage.mjs",
     "validate:stage-fixtures": "node scripts/validate-stage-fixtures.mjs",
     "check:boundaries": "node scripts/check-forbidden-imports.mjs",
-    "smoke:web-api": "node scripts/smoke-web-api.mjs"
+    "smoke:web-api": "node scripts/smoke-web-api.mjs",
+    "test:mysql": "node scripts/mysql-disposable.mjs",
+    "test:browser": "playwright test --config playwright.config.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@playwright/test": "1.64.0",
     "tsx": "4.23.15",
     "typescript": "5.9.3"
   }
