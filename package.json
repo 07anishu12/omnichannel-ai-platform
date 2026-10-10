@@ -12,10 +12,11 @@
     "format:check": "biome format .",
     "lint": "biome lint .",
     "typecheck": "pnpm --filter @omni/contracts --filter @omni/security build && pnpm --workspace-concurrency=1 --recursive typecheck",
-    "test": "node --import tsx --test scripts/validate-stage.test.mjs && pnpm --filter @omni/contracts --filter @omni/security build && pnpm --workspace-concurrency=1 --recursive test",
+    "test": "node --import tsx --test scripts/validate-stage.test.mjs scripts/check-forbidden-imports.test.mjs && pnpm --filter @omni/contracts --filter @omni/security build && pnpm --workspace-concurrency=1 --recursive test",
     "build": "pnpm --workspace-concurrency=1 --recursive build",
     "validate:stage": "node scripts/validate-stage.mjs",
-    "validate:stage-fixtures": "node scripts/validate-stage-fixtures.mjs"
+    "validate:stage-fixtures": "node scripts/validate-stage-fixtures.mjs",
+    "check:boundaries": "node scripts/check-forbidden-imports.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
