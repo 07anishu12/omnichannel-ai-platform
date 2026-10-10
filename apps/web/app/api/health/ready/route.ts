@@ -1,8 +1,9 @@
+import { fetchApiLive } from "../../../../lib/api-client";
+
 export async function GET() {
   const apiBaseUrl = process.env.API_BASE_URL ?? "http://127.0.0.1:4000";
   try {
-    const response = await fetch(`${apiBaseUrl}/health/live`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`api ${response.status}`);
+    await fetchApiLive(apiBaseUrl);
     return Response.json({
       status: "ready",
       service: "web",

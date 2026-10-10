@@ -16,7 +16,8 @@
     "build": "pnpm --workspace-concurrency=1 --recursive build",
     "validate:stage": "node scripts/validate-stage.mjs",
     "validate:stage-fixtures": "node scripts/validate-stage-fixtures.mjs",
-    "check:boundaries": "node scripts/check-forbidden-imports.mjs"
+    "check:boundaries": "node scripts/check-forbidden-imports.mjs",
+    "smoke:web-api": "node scripts/smoke-web-api.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",

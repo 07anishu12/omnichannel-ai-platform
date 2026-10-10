@@ -26,6 +26,7 @@ jobs:
       - run: pnpm build
       - run: pnpm validate:stage-fixtures
       - run: pnpm check:boundaries
+      - run: pnpm smoke:web-api
       - run: pnpm validate:stage --stage 02
 
   ai-service:
