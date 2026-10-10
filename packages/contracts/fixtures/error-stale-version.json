@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "stale_version",
+    "message": "expected config version is stale",
+    "correlationId": "synthetic-correlation-2"
+  }
+}

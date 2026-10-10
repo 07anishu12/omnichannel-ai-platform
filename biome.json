@@ -21,7 +21,8 @@
       "!**/.venv",
       "!**/uv.lock",
       "!**/test-results",
-      "!**/playwright-report"
+      "!**/playwright-report",
+      "!docs/contracts/openapi.json"
     ]
   }
 }

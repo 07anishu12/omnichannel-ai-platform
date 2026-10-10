@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "node --import tsx --test src/index.test.ts"
+    "test": "node --import tsx --test src/index.test.ts src/v1.test.ts",
+    "openapi:generate": "node --import tsx scripts/generate-openapi.ts"
   },
   "dependencies": {
     "zod": "4.6.5"

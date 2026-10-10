@@ -1,0 +1,5 @@
+{
+  "service": "api",
+  "apiVersion": "v1",
+  "schemaVersions": ["1"]
+}

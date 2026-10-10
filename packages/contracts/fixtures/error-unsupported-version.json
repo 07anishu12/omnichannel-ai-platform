@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "unsupported_version",
+    "message": "unsupported schema version",
+    "correlationId": "synthetic-correlation-1"
+  }
+}

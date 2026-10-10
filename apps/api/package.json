@@ -8,7 +8,7 @@
     "start": "node dist/server.js",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "node --import tsx --test src/health.test.ts src/config.test.ts src/redis-readiness.test.ts"
+    "test": "node --import tsx --test src/health.test.ts src/config.test.ts src/redis-readiness.test.ts src/meta.test.ts"
   },
   "dependencies": {
     "@omni/contracts": "workspace:*",

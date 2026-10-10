@@ -12,7 +12,7 @@
     "format:check": "biome format .",
     "lint": "biome lint .",
     "typecheck": "pnpm --filter @omni/contracts --filter @omni/security build && pnpm --workspace-concurrency=1 --recursive typecheck",
-    "test": "node --import tsx --test scripts/validate-stage.test.mjs scripts/check-forbidden-imports.test.mjs && pnpm --filter @omni/contracts --filter @omni/security build && pnpm --workspace-concurrency=1 --recursive test",
+    "test": "node --import tsx --test scripts/validate-stage.test.mjs scripts/check-forbidden-imports.test.mjs scripts/check-openapi.test.mjs && node --import tsx scripts/check-openapi.mjs && pnpm --filter @omni/contracts --filter @omni/security build && pnpm --workspace-concurrency=1 --recursive test",
     "build": "pnpm --workspace-concurrency=1 --recursive build",
     "validate:stage": "node scripts/validate-stage.mjs",
     "validate:stage-fixtures": "node scripts/validate-stage-fixtures.mjs",

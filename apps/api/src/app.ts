@@ -1,7 +1,14 @@
 import Fastify, { type FastifyInstance } from "fastify";
 import mysql from "mysql2/promise";
 import { Redis } from "ioredis";
-import { liveResponseSchema } from "@omni/contracts";
+import {
+  apiMetaV1ResponseSchema,
+  errorResponse,
+  liveResponseSchema,
+  negotiateSchemaVersion,
+  SCHEMA_VERSION_HEADER,
+  SUPPORTED_SCHEMA_VERSIONS,
+} from "@omni/contracts";
 import { logRedactionPaths, newCorrelationId } from "@omni/security";
 import { loadConfig, type ApiConfig } from "./config.js";
 import { DEPENDENCY_CHECK_TIMEOUT_MS, readiness, type DependencyCheck } from "./health.js";
@@ -90,6 +97,22 @@ export async function buildApiApp(options: ApiAppOptions = {}): Promise<FastifyI
   app.get("/health/ready", async (_request, reply) => {
     const result = await readiness("api", checks, options.dependencyTimeoutMs);
     return reply.code(result.statusCode).send(result.body);
+  });
+
+  app.get("/api/v1/meta", async (request, reply) => {
+    const header = request.headers[SCHEMA_VERSION_HEADER];
+    const requested = typeof header === "string" ? header : undefined;
+    if (requested !== undefined && negotiateSchemaVersion(requested) === undefined) {
+      return reply
+        .code(400)
+        .send(errorResponse("unsupported_version", "unsupported schema version", request.id));
+    }
+    const body = apiMetaV1ResponseSchema.parse({
+      service: "api",
+      apiVersion: "v1",
+      schemaVersions: [...SUPPORTED_SCHEMA_VERSIONS],
+    });
+    return reply.code(200).send(body);
   });
 
   app.addHook("onClose", async () => {

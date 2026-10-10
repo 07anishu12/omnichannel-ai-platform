@@ -1,0 +1,346 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Omnichannel platform contracts",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "getHealthLive",
+        "responses": {
+          "200": {
+            "description": "Process is alive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "getHealthReady",
+        "responses": {
+          "200": {
+            "description": "Required dependencies are reachable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required dependency is unreachable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "operationId": "getApiMetaV1",
+        "parameters": [
+          {
+            "name": "x-schema-version",
+            "in": "header",
+            "required": false,
+            "description": "Requested schema version. Absent means the current version.",
+            "schema": {
+              "enum": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "API version and supported schema versions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiMetaV1Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsupported schema version or invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/health": {
+      "get": {
+        "operationId": "getInternalHealthV1",
+        "responses": {
+          "200": {
+            "description": "Private AI service health",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalHealthV1Response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid service credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LiveResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          },
+          "service": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "status",
+          "service"
+        ],
+        "additionalProperties": false
+      },
+      "ReadinessResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "not_ready"
+            ]
+          },
+          "service": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "reachable",
+                    "unreachable",
+                    "disabled"
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "name",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "dependencies"
+        ],
+        "additionalProperties": false
+      },
+      "ApiMetaV1Response": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "const": "api"
+          },
+          "apiVersion": {
+            "type": "string",
+            "const": "v1"
+          },
+          "schemaVersions": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1"
+              ]
+            }
+          }
+        },
+        "required": [
+          "service",
+          "apiVersion",
+          "schemaVersions"
+        ],
+        "additionalProperties": false
+      },
+      "InternalHealthV1Response": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          },
+          "service": {
+            "type": "string",
+            "const": "ai-service"
+          },
+          "audience": {
+            "type": "string",
+            "const": "omnichannel-internal"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "audience"
+        ],
+        "additionalProperties": false
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "invalid_request",
+                  "unauthorized",
+                  "not_found",
+                  "unsupported_version",
+                  "stale_version",
+                  "internal_error"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "correlationId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "correlationId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "EventEnvelopeV1": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "type": "string",
+            "const": "1"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "eventType": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z]+(\\.[a-z_]+)+$"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "correlationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "producer": {
+            "type": "string",
+            "enum": [
+              "api",
+              "worker",
+              "ai-service"
+            ]
+          },
+          "payload": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "eventId",
+          "eventType",
+          "occurredAt",
+          "tenantId",
+          "correlationId",
+          "producer",
+          "payload"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}
