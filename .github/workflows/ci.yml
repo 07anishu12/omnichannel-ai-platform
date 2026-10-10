@@ -25,7 +25,7 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm validate:stage-fixtures
-      - run: pnpm validate:stage -- --stage 02
+      - run: pnpm validate:stage --stage 02
 
   ai-service:
     runs-on: ubuntu-latest
